@@ -6,6 +6,6 @@ jobs:
     runs-on: [my-machine]
     steps:
       - name: take backup
-        run: docker-compose exec -it appsmith appsmithctl backup
+        run: docker compose exec -it appsmith appsmithctl backup
         
     
