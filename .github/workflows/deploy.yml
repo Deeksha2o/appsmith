@@ -1,0 +1,44 @@
+name: deploy appsmith
+on:
+  workflow_dispatch:
+jobs:
+  deploy:
+    runs-on: [ubuntu-latest]
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+      
+      - name: Install Docker
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            apt-transport-https \
+            ca-certificates \
+            curl \
+            software-properties-common
+          curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+          echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+          sudo apt-get update
+          sudo apt-get install -y docker-ce docker-ce-cli containerd.io
+
+      # Step 3: Verify Docker installation
+      - name: Verify Docker Installation
+        run: docker --version
+
+      # Step 4: Install Docker Compose
+      - name: Install Docker Compose
+        run: |
+          DOCKER_COMPOSE_VERSION=$(curl -s https://api.github.com/repos/docker/compose/releases/latest | grep 'tag_name' | cut -d'"' -f4)
+          sudo curl -L "https://github.com/docker/compose/releases/download/$DOCKER_COMPOSE_VERSION/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+          sudo chmod +x /usr/local/bin/docker-compose
+
+      # Step 5: Verify Docker Compose installation
+      - name: Verify Docker Compose Installation
+        run: docker-compose --version
+     
+      - name: run docker command
+        run: docker-compose up -d
+      
+      - name: access appsmith
+        run: docker ps
+        
