@@ -1,0 +1,11 @@
+name: take appsmith backup
+on:
+  workflow_dispatch:
+jobs:
+  backup:
+    runs-on: [my-machine]
+    steps:
+      - name: take backup
+        run: docker-compose exec -it appsmith appsmithctl backup
+        
+    
